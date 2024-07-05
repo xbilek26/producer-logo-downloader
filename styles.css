@@ -6,16 +6,6 @@ body {
     color: #ddd;
 }
 
-a,
-a:visited {
-    color: #6CA0F6;
-    text-decoration: none;
-}
-
-p {
-    margin: 8px 0;
-}
-
 .container {
     max-width: 600px;
     margin: 50px auto;
@@ -24,6 +14,7 @@ p {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     color: #ddd;
+    text-align: center;
 }
 
 label {
@@ -31,6 +22,7 @@ label {
     margin-bottom: 10px;
     font-weight: bold;
     color: #ddd;
+    text-align: left;
 }
 
 input[type="text"] {
@@ -41,25 +33,6 @@ input[type="text"] {
     margin-bottom: 10px;
     background-color: #444;
     color: #ddd;
-}
-
-button,
-a.button {
-    padding: 10px 20px;
-    margin: 10px;
-    border: 1px solid #555;
-    border-radius: 4px;
-    background: #444;
-    color: #ddd;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    display: inline-block;
-    text-align: center;
-}
-
-button:hover,
-a.button:hover {
-    background-color: #555;
 }
 
 #imageContainer {
