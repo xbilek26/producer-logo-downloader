@@ -1,42 +1,62 @@
+document.addEventListener("DOMContentLoaded", function () {
+
+    var userInput = document.getElementById("productCodeInput");
+
+    userInput.addEventListener("keydown", function (event) {
+        if (!(event.ctrlKey && event.key === "v")) {
+            event.preventDefault();
+        }
+    });
+
+    userInput.addEventListener("paste", function (event) {
+
+        event.preventDefault();
+
+        var pastedText = (event.clipboardData || window.clipboardData).getData('text');
+
+        userInput.value = pastedText;
+
+        fetchAndDisplayData(event);
+    });
+
+    userInput.addEventListener("input", function (event) {
+
+        if (userInput.value.length > 0) {
+            userInput.value = userInput.value.charAt(0);
+        }
+
+        fetchAndDisplayData(event);
+    });
+
+    userInput.addEventListener("click", function (event) {
+        userInput.select();
+    });
+});
+
 async function fetchAndDisplayData() {
     const productCode = document.getElementById('productCodeInput').value.trim();
-    if (!productCode) {
-        alert('Prosím, zadejte kód produktu.');
-        return;
-    }
 
     const url = `https://www.alza.cz/kod/${productCode}`;
-    console.log(`Fetching HTML from: ${url}`);
 
     const response = await fetch(url);
-    if (!response.ok) {
-        throw new Error(`Chyba při načítání stránky! Status: ${response.status}`);
-    }
-
     const html = await response.text();
     const imageUrl = extractImageUrlFromHtml(html);
-
-    displayImage(imageUrl);
     const brandName = extractBrandNameFromHtml(html);
 
+    displayImage(imageUrl);
     downloadImage(imageUrl, brandName);
 }
 
 function extractImageUrlFromHtml(html) {
     const regex = /https:\/\/image\.alza\.cz\/Foto\/vyrobci\/.*?\.png/;
     const match = html.match(regex);
-    if (!match) {
-        throw new Error('URL obrázku nebyla nalezena.');
-    }
+
     return match[0];
 }
 
 function extractBrandNameFromHtml(html) {
     const regex = /"brand"\s*:\s*"([^"]+)"/;
     const match = html.match(regex);
-    if (!match || match.length < 2) {
-        throw new Error('Hodnota "brand" nebyla nalezena.');
-    }
 
     return match[1];
 }
@@ -52,27 +72,18 @@ function displayImage(imageUrl) {
 }
 
 async function downloadImage(imageUrl, brandName) {
-    try {
-        const response = await fetch(imageUrl);
-        if (!response.ok) {
-            throw new Error(`Chyba při stažení obrázku! Status: ${response.status}`);
-        }
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
 
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
+    link.href = url;
+    link.download = `${brandName.toLowerCase().replace(/ /g, '_')}_IB.png`;
+    link.style.display = 'none';
 
-        link.href = url;
-        link.download = `${brandName.toLowerCase().replace(/ /g, '_')}_IB.png`;
-        link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
 
-        document.body.appendChild(link);
-        link.click();
-
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error('Chyba při stahování obrázku:', error);
-        alert(`Nastala chyba při stahování obrázku: ${error.message}`);
-    }
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
 }
