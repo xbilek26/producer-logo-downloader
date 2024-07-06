@@ -48,7 +48,7 @@ async function fetchAndDisplayData() {
 }
 
 function extractImageUrlFromHtml(html) {
-    const regex = /https:\/\/image\.alza\.cz\/Foto\/vyrobci\/.*?\.png/;
+    const regex = /https:\/\/image\.alza\.cz\/Foto\/vyrobci\/.*?\.(png|jpg)/;
     const match = html.match(regex);
 
     return match[0];
@@ -78,7 +78,7 @@ async function downloadImage(imageUrl, brandName) {
     const link = document.createElement('a');
 
     link.href = url;
-    link.download = `${brandName.toLowerCase().replace(/ /g, '_')}_IB.png`;
+    link.download = `${brandName.toLowerCase().replace(/ /g, '_')}_IB.${getFileExtension(imageUrl)}`;
     link.style.display = 'none';
 
     document.body.appendChild(link);
@@ -86,4 +86,8 @@ async function downloadImage(imageUrl, brandName) {
 
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
+}
+
+function getFileExtension(url) {
+    return url.split('.').pop();
 }
